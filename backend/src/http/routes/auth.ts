@@ -39,7 +39,7 @@ function setRefreshCookie(res: Response, raw: string): void {
     httpOnly: true,
     sameSite: "lax",
     secure: config.isProd,
-    path: "/auth",
+    path: "/",
     maxAge: config.jwt.refreshTtlSeconds * 1000,
   });
 }
@@ -136,7 +136,7 @@ export function authRouter(rl: RateLimitOverrides = {}): Router {
     asyncHandler(async (req, res) => {
       const raw = req.cookies?.[COOKIE];
       if (raw) await revokeRefreshToken(raw);
-      res.clearCookie(COOKIE, { path: "/auth" });
+      res.clearCookie(COOKIE, { path: "/" });
       res.json({ ok: true });
     }),
   );

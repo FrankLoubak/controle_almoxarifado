@@ -1,0 +1,76 @@
+/* Estilo base — limpo e intuitivo (CLAUDE.md 6). Sem framework, dependência zero. */
+:root {
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --ink: #1f2933;
+  --muted: #6b7280;
+  --brand: #2563eb;
+  --brand-ink: #ffffff;
+  --border: #e5e7eb;
+  --danger: #dc2626;
+  --ok: #059669;
+  --radius: 8px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+a { color: var(--brand); text-decoration: none; }
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 220px; background: #111827; color: #cbd5e1; padding: 20px 12px; flex-shrink: 0;
+}
+.sidebar h1 { font-size: 18px; color: #fff; margin: 0 0 20px 8px; }
+.sidebar nav a {
+  display: block; padding: 10px 12px; border-radius: var(--radius); color: #cbd5e1; margin-bottom: 4px;
+}
+.sidebar nav a:hover { background: #1f2937; color: #fff; }
+.sidebar nav a.active { background: var(--brand); color: #fff; }
+.sidebar .spacer { flex: 1; }
+.content { flex: 1; padding: 28px 32px; max-width: 1100px; }
+.content h2 { margin-top: 0; }
+
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; margin-bottom: 20px;
+}
+.card h3 { margin-top: 0; }
+
+label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+input, select, textarea {
+  width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius);
+  font-size: 14px; background: #fff; margin-bottom: 12px;
+}
+input:focus, select:focus { outline: 2px solid var(--brand); border-color: transparent; }
+
+button {
+  padding: 9px 14px; border: none; border-radius: var(--radius); font-size: 14px; cursor: pointer;
+  background: var(--brand); color: var(--brand-ink); font-weight: 500;
+}
+button:hover { filter: brightness(1.05); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.secondary { background: #e5e7eb; color: var(--ink); }
+button.danger { background: var(--danger); }
+button.ok { background: var(--ok); }
+button.small { padding: 5px 9px; font-size: 12px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+.row > * { flex: 1; min-width: 140px; }
+.row.tight > * { flex: 0 0 auto; min-width: 0; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+
+.banner { padding: 10px 14px; border-radius: var(--radius); margin-bottom: 16px; font-size: 14px; }
+.banner.error { background: #fee2e2; color: var(--danger); }
+.banner.success { background: #d1fae5; color: var(--ok); }
+
+.badge { padding: 2px 8px; border-radius: 999px; font-size: 12px; background: #e5e7eb; color: #374151; }
+.muted { color: var(--muted); font-size: 13px; }
+
+.login-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+.login-card { width: 360px; }
