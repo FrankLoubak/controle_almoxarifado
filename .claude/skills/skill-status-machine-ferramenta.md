@@ -16,7 +16,8 @@ em_reparo · aguardando_devolucao · sucateada
 | disponivel | alugada | realizar empréstimo | POST /loans | almoxarife |
 | alugada | disponivel | encerrar empréstimo | PATCH /loans/:id/close | almoxarife |
 | disponivel | aguardando_orcamento | enviar p/ reparo (só se disponivel) | POST /tools/:id/to-repair | almoxarife |
-| aguardando_orcamento | aguardando_liberacao | cadastrar orçamento | POST /budgets | almoxarife |
+| aguardando_orcamento | aguardando_liberacao | cadastrar orçamento | POST /orcamentos | almoxarife |
+| aguardando_orcamento | em_reparo | reparo interno sem orçamento (regra 11) | POST /reparos/interno-direto | almoxarife |
 | aguardando_liberacao | em_reparo | orçamento aprovado | PATCH /budgets/:id (liberado) | almoxarife |
 | aguardando_liberacao | aguardando_orcamento | orçamento recusado (orçamento mantido) | PATCH /budgets/:id (recusado) | almoxarife |
 | em_reparo | aguardando_devolucao | reparo concluído | PATCH /repairs/:id/finish | almoxarife |

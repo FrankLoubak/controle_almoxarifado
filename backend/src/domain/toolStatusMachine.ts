@@ -15,7 +15,8 @@ export type ToolStatus = (typeof toolStatusEnum.enumValues)[number];
 const TRANSITIONS: Record<ToolStatus, ToolStatus[]> = {
   disponivel: ["alugada", "aguardando_orcamento", "sucateada"],
   alugada: ["disponivel"], // não pode ser sucateada enquanto alugada
-  aguardando_orcamento: ["aguardando_liberacao", "sucateada"],
+  // em_reparo direto: reparo interno sem orçamento (regra 11 / skill-status-machine).
+  aguardando_orcamento: ["aguardando_liberacao", "em_reparo", "sucateada"],
   aguardando_liberacao: ["em_reparo", "aguardando_orcamento", "sucateada"],
   em_reparo: ["aguardando_devolucao", "sucateada"],
   aguardando_devolucao: ["disponivel", "sucateada"],

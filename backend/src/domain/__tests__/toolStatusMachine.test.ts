@@ -12,6 +12,8 @@ describe("toolStatusMachine", () => {
     expect(canTransition("aguardando_orcamento", "aguardando_liberacao")).toBe(true);
     expect(canTransition("aguardando_liberacao", "em_reparo")).toBe(true);
     expect(canTransition("aguardando_liberacao", "aguardando_orcamento")).toBe(true);
+    // Reparo interno sem orçamento (regra 11).
+    expect(canTransition("aguardando_orcamento", "em_reparo")).toBe(true);
     expect(canTransition("em_reparo", "aguardando_devolucao")).toBe(true);
     expect(canTransition("aguardando_devolucao", "disponivel")).toBe(true);
     expect(canTransition("disponivel", "alugada")).toBe(true);
