@@ -10,6 +10,7 @@ import { authenticate } from "./http/middleware/authenticate";
 import { errorHandler } from "./http/middleware/errors";
 import type { RateLimitOverrides } from "./http/middleware/rateLimit";
 import { authRouter } from "./http/routes/auth";
+import { ferramentasRouter } from "./http/routes/ferramentas";
 import { funcionariosRouter } from "./http/routes/funcionarios";
 import { prestadoresRouter } from "./http/routes/prestadores";
 import { superAdminAuthRouter } from "./http/routes/superAdminAuth";
@@ -30,6 +31,7 @@ export function createApp(opts: { rateLimit?: RateLimitOverrides } = {}) {
   // Rotas de negócio (Sprint 3+) — exigem funcionário autenticado.
   app.use("/funcionarios", authenticate, funcionariosRouter());
   app.use("/prestadores", authenticate, prestadoresRouter());
+  app.use("/ferramentas", authenticate, ferramentasRouter());
 
   app.use(errorHandler);
   return app;
