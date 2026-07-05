@@ -15,6 +15,27 @@
       "when": 1783286468967,
       "tag": "0001_rls_hardening",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783287298403,
+      "tag": "0002_curvy_microbe",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783287298404,
+      "tag": "0003_auth_functions",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783287613153,
+      "tag": "0004_concerned_landau",
+      "breakpoints": true
     }
   ]
 }

@@ -11,6 +11,8 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   date,
+  integer,
+  jsonb,
   numeric,
   pgPolicy,
   pgTable,
@@ -58,12 +60,15 @@ const tenantPolicy = (col: AnyPgColumn) =>
 // ── Nível de plataforma ──────────────────────────────────────────────────────
 
 // Super-admin da plataforma (CLAUDE.md 4.11). Campos de 2FA entram no Sprint 2.
-// Sem política: RLS habilitado nega acesso à role de aplicação (só o dono acessa).
+// Sem política: RLS habilitado nega acesso à role de aplicação (o login usa a função
+// SECURITY DEFINER auth_lookup_super_admin — D18). Campos TOTP para 2FA (D16).
 export const superAdmins = pgTable("super_admins", {
   id: pk(),
   nome: text("nome").notNull(),
   email: text("email").notNull().unique(),
   senhaHash: text("senha_hash").notNull(),
+  totpSecret: text("totp_secret"), // segredo TOTP cifrado (base32); null até habilitar 2FA
+  totpEnabled: boolean("totp_enabled").notNull().default(false),
   ...timestamps(),
 }).enableRLS();
 
@@ -255,3 +260,34 @@ export const reparosInternos = pgTable(
   },
   (t) => [tenantPolicy(t.tenantId)],
 );
+
+// ── Autenticação (nível de plataforma — sem RLS de tenant; acesso via role de app) ──
+
+// Desafio de OTP (2FA por WhatsApp) para funcionários (CLAUDE.md 5.2, D6/D18).
+// Sem RLS de tenant: o desafio é criado/consultado no login, antes do tenant estar fixado.
+export const otpChallenges = pgTable("otp_challenges", {
+  id: pk(),
+  funcionarioId: uuid("funcionario_id").notNull().references(() => funcionarios.id),
+  tenantId: uuid("tenant_id").notNull(), // guardado para fixar o tenant após o 2FA
+  codeHash: text("code_hash").notNull(), // hash do OTP (nunca o código em claro)
+  purpose: text("purpose").notNull().default("login_2fa"),
+  attempts: integer("attempts").notNull().default(0),
+  maxAttempts: integer("max_attempts").notNull().default(5), // D6
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(), // +5min (D6)
+  lastSentAt: timestamp("last_sent_at", { withTimezone: true }).notNull().defaultNow(),
+  consumedAt: timestamp("consumed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Refresh tokens (JWT de sessão) — revogáveis (D5). Serve funcionário e super-admin.
+export const refreshTokens = pgTable("refresh_tokens", {
+  id: pk(),
+  subjectType: text("subject_type").notNull(), // 'funcionario' | 'super_admin'
+  subjectId: uuid("subject_id").notNull(),
+  tokenHash: text("token_hash").notNull(), // hash do refresh token (nunca em claro)
+  // Snapshot das claims do access token, para re-emitir no /refresh sem novo lookup.
+  claims: jsonb("claims").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(), // +7 dias (D5)
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

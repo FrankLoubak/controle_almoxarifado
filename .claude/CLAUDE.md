@@ -201,8 +201,10 @@ Transições — ver `.claude/skills/skill-status-machine-ferramenta.md`:
 20. Orçamento recusado retorna a ferramenta para `aguardando_orcamento`.
 
 ### 5.2 Autenticação
-- **Almoxarife/Root**: telefone + senha → 2FA por WhatsApp. Depositário não tem login.
-- **Super-admin**: e-mail + senha → 2FA, em área separada fora do contexto de tenant.
+- **Almoxarife/Root**: telefone + senha → 2FA por WhatsApp (OTP). Depositário não tem login.
+- **Super-admin**: e-mail + senha → 2FA por **TOTP** (D16), em área separada.
+- **Hashing**: argon2id. Fluxo em 2 passos (senha → desafio 2FA → JWT).
+- Lookup de login é cross-tenant via funções `SECURITY DEFINER` (D18).
 - **OTP (2FA)**: 6 dígitos numéricos, validade **5 min**, máx. **5 tentativas**,
   reenvio permitido após **60s**.
 - **Sessão**: JWT — access token 15min + refresh token 7 dias em cookie httpOnly;
@@ -286,6 +288,9 @@ Cada um como tela com filtro de período + botão **Exportar CSV**:
 | D13 | Sucatear ferramenta com reparo/orçamento em aberto → reparo/orçamento **cancelado** (mantido na base) e status → `sucateada` | Consistência da máquina de estados sem perder histórico. |
 | D14 | Root = **Funcionário com `is_root = true`** (e `status_almoxarife = true`); `Tenant.id_root_funcionario` (FK nullable) aponta pra ele | Reaproveita login/2FA de funcionário; menor desvio da spec (mantém `status_almoxarife` booleano). |
 | D15 | Migrations aplicadas pelo **dono** (`MIGRATION_DATABASE_URL`); app conecta como role **sem privilégio** `almox_app` (`DATABASE_URL`), sujeita ao RLS + `FORCE ROW LEVEL SECURITY` | RLS não se aplica a superuser/owner; role dedicada garante isolamento real. |
+| D16 | 2FA do **super-admin = TOTP** (app autenticador); `totp_secret` cifrado em `super_admins` | Não depende do canal WhatsApp não-oficial; área da plataforma mais segura. |
+| D17 | `NotificationProvider` com **adapter selecionável por env** (`NOTIFICATION_PROVIDER=log\|evolution`); `log` (mock) agora, `evolution` como stub configurável | Sprint 2 testável sem credenciais; troca sem mexer na lógica de negócio (5.3). |
+| D18 | Login resolve funcionário/super-admin por telefone/e-mail **global** via funções `SECURITY DEFINER` (`auth_lookup_*`), pois o RLS nega leitura sem tenant; app **não** tem `BYPASSRLS` | Necessário para login por telefone global; mantém isolamento (privilégio mínimo). `otp_challenges` e `refresh_tokens` são tabelas de plataforma (sem RLS de tenant). |
 
 ### Nota LGPD
 Dados pessoais (nome, telefone, CPF, e-mail de funcionários) são tratados com
