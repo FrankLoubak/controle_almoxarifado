@@ -97,6 +97,7 @@ Estrutura do repositório:
 - `id`
 - `razao_social`, `cnpj` (único), `email`, `telefone`, `endereco`
 - `status_assinatura` (ver 5.4)
+- `id_root_funcionario` (FK nullable → Funcionário com `is_root = true`) — D14.
 - Um Tenant tem um usuário Root associado.
 - **Criado exclusivamente pelo super-admin** (não há self-signup).
 
@@ -104,6 +105,7 @@ Estrutura do repositório:
 - `id`, `nome`, `data_cadastro`, `numero_telefone` (**único global**), `cpf`,
   `email` (opcional), `data_admissao`
 - `status_almoxarife` (booleano)
+- `is_root` (booleano — D14; Root implica `status_almoxarife = true`)
 - `senha` — exigida **somente** quando `status_almoxarife = true`; nula enquanto for
   apenas depositário sem login.
 - **Métodos**: cadastrar, excluir (soft-delete), editar, promover a almoxarife
@@ -282,6 +284,8 @@ Cada um como tela com filtro de período + botão **Exportar CSV**:
 | D11 | Deploy **domínio único** + Docker Compose (Hostinger) | Simples; tenant resolvido no login. |
 | D12 | Timezone `America/Sao_Paulo`, moeda **BRL**, timestamps em UTC (`timestamptz`) | Consistência de datas nos relatórios. |
 | D13 | Sucatear ferramenta com reparo/orçamento em aberto → reparo/orçamento **cancelado** (mantido na base) e status → `sucateada` | Consistência da máquina de estados sem perder histórico. |
+| D14 | Root = **Funcionário com `is_root = true`** (e `status_almoxarife = true`); `Tenant.id_root_funcionario` (FK nullable) aponta pra ele | Reaproveita login/2FA de funcionário; menor desvio da spec (mantém `status_almoxarife` booleano). |
+| D15 | Migrations aplicadas pelo **dono** (`MIGRATION_DATABASE_URL`); app conecta como role **sem privilégio** `almox_app` (`DATABASE_URL`), sujeita ao RLS + `FORCE ROW LEVEL SECURITY` | RLS não se aplica a superuser/owner; role dedicada garante isolamento real. |
 
 ### Nota LGPD
 Dados pessoais (nome, telefone, CPF, e-mail de funcionários) são tratados com
