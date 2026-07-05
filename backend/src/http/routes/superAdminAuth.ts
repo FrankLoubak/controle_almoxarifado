@@ -28,7 +28,7 @@ function setRefreshCookie(res: Response, raw: string): void {
     httpOnly: true,
     sameSite: "lax",
     secure: config.isProd,
-    path: "/auth",
+    path: "/",
     maxAge: config.jwt.refreshTtlSeconds * 1000,
   });
 }

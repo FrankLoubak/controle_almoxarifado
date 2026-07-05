@@ -1,14 +1,21 @@
 /**
- * Finalidade: bootstrap do app React (esqueleto Sprint 0).
- * Como funciona: monta o componente App na div #root do index.html.
- * Relações: App.tsx (raiz da UI); telas reais entram a partir do Sprint 7.
+ * Finalidade: bootstrap do app React (router + provider de autenticação + estilos).
+ * Como funciona: monta App dentro de BrowserRouter e AuthProvider na div #root.
+ * Relações: App.tsx (rotas), AuthContext (sessão), styles.css.
  */
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import { App } from "./App";
+import { AuthProvider } from "./auth/AuthContext";
+import "./styles.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
   </StrictMode>
 );
