@@ -10,6 +10,7 @@ import { authenticate } from "./http/middleware/authenticate";
 import { errorHandler } from "./http/middleware/errors";
 import type { RateLimitOverrides } from "./http/middleware/rateLimit";
 import { authRouter } from "./http/routes/auth";
+import { emprestimosRouter } from "./http/routes/emprestimos";
 import { ferramentasRouter } from "./http/routes/ferramentas";
 import { funcionariosRouter } from "./http/routes/funcionarios";
 import { prestadoresRouter } from "./http/routes/prestadores";
@@ -32,6 +33,7 @@ export function createApp(opts: { rateLimit?: RateLimitOverrides } = {}) {
   app.use("/funcionarios", authenticate, funcionariosRouter());
   app.use("/prestadores", authenticate, prestadoresRouter());
   app.use("/ferramentas", authenticate, ferramentasRouter());
+  app.use("/emprestimos", authenticate, emprestimosRouter());
 
   app.use(errorHandler);
   return app;
