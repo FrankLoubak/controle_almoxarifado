@@ -6,9 +6,12 @@
  */
 import cookieParser from "cookie-parser";
 import express from "express";
+import { authenticate } from "./http/middleware/authenticate";
 import { errorHandler } from "./http/middleware/errors";
 import type { RateLimitOverrides } from "./http/middleware/rateLimit";
 import { authRouter } from "./http/routes/auth";
+import { funcionariosRouter } from "./http/routes/funcionarios";
+import { prestadoresRouter } from "./http/routes/prestadores";
 import { superAdminAuthRouter } from "./http/routes/superAdminAuth";
 
 export function createApp(opts: { rateLimit?: RateLimitOverrides } = {}) {
@@ -23,6 +26,10 @@ export function createApp(opts: { rateLimit?: RateLimitOverrides } = {}) {
 
   app.use("/auth/super-admin", superAdminAuthRouter(opts.rateLimit));
   app.use("/auth", authRouter(opts.rateLimit));
+
+  // Rotas de negócio (Sprint 3+) — exigem funcionário autenticado.
+  app.use("/funcionarios", authenticate, funcionariosRouter());
+  app.use("/prestadores", authenticate, prestadoresRouter());
 
   app.use(errorHandler);
   return app;
