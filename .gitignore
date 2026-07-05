@@ -1,0 +1,49 @@
+# ─────────────────────────────────────────────────────────────
+# .gitignore — Sistema de Gestão de Almoxarifado (SaaS multi-tenant)
+# Stack: Node.js (backend) + React/Vite (frontend) + PostgreSQL
+# ─────────────────────────────────────────────────────────────
+
+# Dependências
+node_modules/
+.pnp
+.pnp.js
+
+# Variáveis de ambiente (NUNCA versionar segredos)
+.env
+.env.*
+!.env.example
+
+# Builds / saída
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Cache de ferramentas
+.cache/
+.vite/
+coverage/
+.eslintcache
+
+# Banco de dados local / dumps
+*.sqlite
+*.sqlite3
+*.dump
+
+# Editores / SO
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Drizzle (migrations geradas são versionadas; artefatos temporários não)
+drizzle/.snapshot-temp/

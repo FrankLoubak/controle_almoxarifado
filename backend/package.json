@@ -1,0 +1,30 @@
+{
+  "name": "almoxarifado-backend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "API REST — Sistema de Gestão de Almoxarifado (SaaS multi-tenant)",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.36.0",
+    "express": "^4.21.0",
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.11.0",
+    "drizzle-kit": "^0.28.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
