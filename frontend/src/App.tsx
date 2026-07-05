@@ -12,6 +12,7 @@ import { EmprestarPage } from "./pages/EmprestarPage";
 import { FerramentasPage } from "./pages/FerramentasPage";
 import { LoginPage } from "./pages/LoginPage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
+import { RelatoriosPage } from "./pages/RelatoriosPage";
 
 function Layout() {
   const { claims, logout } = useAuth();
@@ -26,6 +27,7 @@ function Layout() {
           <NavLink to="/cadastrar" title="Cadastrar funcionários e prestadores">Cadastrar</NavLink>
           <NavLink to="/emprestar" title="Realizar e encerrar empréstimos">Emprestar</NavLink>
           <NavLink to="/ferramentas" title="Ferramentas, reparos e orçamentos">Ferramentas</NavLink>
+          <NavLink to="/relatorios" title="Relatórios e exportação CSV">Relatórios</NavLink>
           <NavLink to="/assinatura" title="Assinatura da empresa (em breve)">Assinatura</NavLink>
         </nav>
         <div className="spacer" />
@@ -80,6 +82,7 @@ export function App() {
         <Route path="/cadastrar" element={<CadastrarPage />} />
         <Route path="/emprestar" element={<EmprestarPage />} />
         <Route path="/ferramentas" element={<FerramentasPage />} />
+        <Route path="/relatorios" element={<RelatoriosPage />} />
         <Route
           path="/assinatura"
           element={<PlaceholderPage titulo="Assinatura" descricao="Gestão de assinatura da empresa (Root). Disponível no Sprint 9, junto com o PaymentProvider (Mercado Pago)." />}
