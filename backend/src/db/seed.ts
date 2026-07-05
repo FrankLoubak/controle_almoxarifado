@@ -8,22 +8,32 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
+import { hashPassword } from "../auth/password";
+import { generateTotpSecret } from "../auth/totp";
 import { funcionarios, superAdmins, tenants } from "./schema/index";
 import { MIGRATION_URL } from "./urls";
 
 const { Pool } = pg;
 
-// Placeholder — substituído por hash real (argon2/bcrypt) no Sprint 2.
-const SENHA_PLACEHOLDER = "SEED_PLACEHOLDER_TROCAR_NO_SPRINT_2";
+// Credenciais de desenvolvimento (trocar em produção).
+const SENHA_ROOT_DEV = "Root@123";
+const SENHA_ADMIN_DEV = "Admin@123";
 
 async function main() {
   const pool = new Pool({ connectionString: MIGRATION_URL });
   const db = drizzle(pool);
 
-  // Super-admin da plataforma.
+  // Super-admin da plataforma (com TOTP habilitado — D16).
+  const totp = generateTotpSecret("admin@plataforma.local");
   await db
     .insert(superAdmins)
-    .values({ nome: "Super Admin", email: "admin@plataforma.local", senhaHash: SENHA_PLACEHOLDER })
+    .values({
+      nome: "Super Admin",
+      email: "admin@plataforma.local",
+      senhaHash: await hashPassword(SENHA_ADMIN_DEV),
+      totpSecret: totp.secret,
+      totpEnabled: true,
+    })
     .onConflictDoNothing();
 
   // Tenant de exemplo.
@@ -47,7 +57,7 @@ async function main() {
       numeroTelefone: "+5511988887777",
       statusAlmoxarife: true,
       isRoot: true,
-      senhaHash: SENHA_PLACEHOLDER,
+      senhaHash: await hashPassword(SENHA_ROOT_DEV),
     })
     .returning();
 
@@ -55,8 +65,12 @@ async function main() {
   await db.update(tenants).set({ idRootFuncionario: root.id }).where(eq(tenants.id, tenant.id));
 
   await pool.end();
-  // eslint-disable-next-line no-console
+  /* eslint-disable no-console */
   console.log(`seed ok — tenant=${tenant.id} root=${root.id}`);
+  console.log(`  Root:  telefone=+5511988887777  senha=${SENHA_ROOT_DEV}`);
+  console.log(`  Admin: email=admin@plataforma.local  senha=${SENHA_ADMIN_DEV}`);
+  console.log(`  TOTP super-admin (cadastre no app autenticador): ${totp.uri}`);
+  /* eslint-enable no-console */
 }
 
 main().catch((err) => {
