@@ -9,6 +9,7 @@ import express from "express";
 import { authenticate } from "./http/middleware/authenticate";
 import { errorHandler } from "./http/middleware/errors";
 import type { RateLimitOverrides } from "./http/middleware/rateLimit";
+import { assinaturaRouter, pagamentosWebhookRouter } from "./http/routes/assinatura";
 import { authRouter } from "./http/routes/auth";
 import { emprestimosRouter } from "./http/routes/emprestimos";
 import { ferramentasRouter } from "./http/routes/ferramentas";
@@ -40,6 +41,9 @@ export function createApp(opts: { rateLimit?: RateLimitOverrides } = {}) {
   app.use("/orcamentos", authenticate, orcamentosRouter());
   app.use("/reparos", authenticate, reparosRouter());
   app.use("/relatorios", authenticate, relatoriosRouter());
+  app.use("/assinatura", authenticate, assinaturaRouter());
+  // Webhook do gateway — público (sem authenticate).
+  app.use("/pagamentos", pagamentosWebhookRouter());
 
   app.use(errorHandler);
   return app;
