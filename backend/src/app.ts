@@ -15,6 +15,7 @@ import { ferramentasRouter } from "./http/routes/ferramentas";
 import { funcionariosRouter } from "./http/routes/funcionarios";
 import { orcamentosRouter } from "./http/routes/orcamentos";
 import { prestadoresRouter } from "./http/routes/prestadores";
+import { relatoriosRouter } from "./http/routes/relatorios";
 import { reparosRouter } from "./http/routes/reparos";
 import { superAdminAuthRouter } from "./http/routes/superAdminAuth";
 
@@ -38,6 +39,7 @@ export function createApp(opts: { rateLimit?: RateLimitOverrides } = {}) {
   app.use("/emprestimos", authenticate, emprestimosRouter());
   app.use("/orcamentos", authenticate, orcamentosRouter());
   app.use("/reparos", authenticate, reparosRouter());
+  app.use("/relatorios", authenticate, relatoriosRouter());
 
   app.use(errorHandler);
   return app;
