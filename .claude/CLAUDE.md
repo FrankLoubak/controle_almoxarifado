@@ -291,6 +291,7 @@ Cada um como tela com filtro de período + botão **Exportar CSV**:
 | D16 | 2FA do **super-admin = TOTP** (app autenticador); `totp_secret` cifrado em `super_admins` | Não depende do canal WhatsApp não-oficial; área da plataforma mais segura. |
 | D17 | `NotificationProvider` com **adapter selecionável por env** (`NOTIFICATION_PROVIDER=log\|evolution`); `log` (mock) agora, `evolution` como stub configurável | Sprint 2 testável sem credenciais; troca sem mexer na lógica de negócio (5.3). |
 | D18 | Login resolve funcionário/super-admin por telefone/e-mail **global** via funções `SECURITY DEFINER` (`auth_lookup_*`), pois o RLS nega leitura sem tenant; app **não** tem `BYPASSRLS` | Necessário para login por telefone global; mantém isolamento (privilégio mínimo). `otp_challenges` e `refresh_tokens` são tabelas de plataforma (sem RLS de tenant). |
+| D19 | `PaymentProvider` com **adapter selecionável por env** (`PAYMENT_PROVIDER=mock\|mercadopago`); `mock` agora, Mercado Pago como stub configurável | Sprint 9 testável sem credenciais; troca sem mexer na lógica de cobrança (5.4). Webhook aplica update via função `SECURITY DEFINER` (sem contexto de tenant). |
 
 ### Nota LGPD
 Dados pessoais (nome, telefone, CPF, e-mail de funcionários) são tratados com

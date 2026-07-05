@@ -43,4 +43,5 @@ export const config = {
     otpMax: num("RL_OTP_MAX", 30),
   },
   notificationProvider: process.env.NOTIFICATION_PROVIDER ?? "log", // D17
+  paymentProvider: process.env.PAYMENT_PROVIDER ?? "mock", // D19 (mock | mercadopago)
 };

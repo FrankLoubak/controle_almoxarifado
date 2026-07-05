@@ -10,6 +10,7 @@ import { Button } from "./components/ui";
 import { CadastrarPage } from "./pages/CadastrarPage";
 import { EmprestarPage } from "./pages/EmprestarPage";
 import { FerramentasPage } from "./pages/FerramentasPage";
+import { AssinaturaPage } from "./pages/AssinaturaPage";
 import { LoginPage } from "./pages/LoginPage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { RelatoriosPage } from "./pages/RelatoriosPage";
@@ -83,10 +84,7 @@ export function App() {
         <Route path="/emprestar" element={<EmprestarPage />} />
         <Route path="/ferramentas" element={<FerramentasPage />} />
         <Route path="/relatorios" element={<RelatoriosPage />} />
-        <Route
-          path="/assinatura"
-          element={<PlaceholderPage titulo="Assinatura" descricao="Gestão de assinatura da empresa (Root). Disponível no Sprint 9, junto com o PaymentProvider (Mercado Pago)." />}
-        />
+        <Route path="/assinatura" element={<AssinaturaPage />} />
         <Route
           path="/super-admin"
           element={<PlaceholderPage titulo="Painel do super-admin" descricao="Gestão de empresas-cliente e cobrança da plataforma. Requer endpoints de gestão de tenants (sprint futuro)." />}
