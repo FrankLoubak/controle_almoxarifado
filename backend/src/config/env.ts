@@ -41,6 +41,7 @@ export const config = {
     loginMax: num("RL_LOGIN_MAX", 20),
     otpWindowMs: num("RL_OTP_WINDOW_MS", 15 * 60 * 1000),
     otpMax: num("RL_OTP_MAX", 30),
+    globalMax: num("RL_GLOBAL_MAX", 1000),
   },
   notificationProvider: process.env.NOTIFICATION_PROVIDER ?? "log", // D17
   paymentProvider: process.env.PAYMENT_PROVIDER ?? "mock", // D19 (mock | mercadopago)
