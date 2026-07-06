@@ -18,7 +18,9 @@ const { Pool } = pg;
 const owner = new Pool({ connectionString: MIGRATION_URL });
 const app = createApp();
 const digits = () => randomUUID().replace(/\D/g, "").padEnd(14, "0").slice(0, 14);
-const hoje = new Date().toISOString().slice(0, 10);
+const dia = (offset: number) => new Date(Date.now() + offset * 86400000).toISOString().slice(0, 10);
+const ontem = dia(-1);
+const amanha = dia(1);
 
 let tenantA: string;
 let tenantB: string;
@@ -100,7 +102,7 @@ describe("Relatórios", () => {
   it("filtro por período restringe os resultados", async () => {
     const vazio = await request(app).get("/relatorios/alugadas?inicio=2000-01-01&fim=2000-01-02").set(H());
     expect(vazio.body).toHaveLength(0);
-    const cheio = await request(app).get(`/relatorios/alugadas?inicio=${hoje}&fim=${hoje}`).set(H());
+    const cheio = await request(app).get(`/relatorios/alugadas?inicio=${ontem}&fim=${amanha}`).set(H());
     expect(cheio.body).toHaveLength(1);
   });
 

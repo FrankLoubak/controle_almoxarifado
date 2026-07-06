@@ -293,10 +293,32 @@ Cada um como tela com filtro de período + botão **Exportar CSV**:
 | D18 | Login resolve funcionário/super-admin por telefone/e-mail **global** via funções `SECURITY DEFINER` (`auth_lookup_*`), pois o RLS nega leitura sem tenant; app **não** tem `BYPASSRLS` | Necessário para login por telefone global; mantém isolamento (privilégio mínimo). `otp_challenges` e `refresh_tokens` são tabelas de plataforma (sem RLS de tenant). |
 | D19 | `PaymentProvider` com **adapter selecionável por env** (`PAYMENT_PROVIDER=mock\|mercadopago`); `mock` agora, Mercado Pago como stub configurável | Sprint 9 testável sem credenciais; troca sem mexer na lógica de cobrança (5.4). Webhook aplica update via função `SECURITY DEFINER` (sem contexto de tenant). |
 
-### Nota LGPD
-Dados pessoais (nome, telefone, CPF, e-mail de funcionários) são tratados com
-soft-delete; não há hard-delete que apague histórico legítimo. Retenção alinhada à
-necessidade operacional e fiscal. Reavaliar política de retenção antes do go-live.
+### Política de retenção de dados (LGPD) — Sprint 10
+
+Definida no Sprint 10; **validar com jurídico antes do go-live** (Sprint 11).
+
+**Dados pessoais tratados**: nome, telefone, CPF, e-mail de funcionários; dados cadastrais
+do tenant (CNPJ, e-mail). Base legal: execução de contrato/legítimo interesse operacional.
+
+**Princípios**:
+- **Minimização**: coletamos apenas o necessário à operação (CPF/e-mail são opcionais).
+- **Soft-delete**: exclusão marca `deleted_at`; não há hard-delete que apague histórico
+  legítimo (empréstimos/reparos/orçamentos) — preserva rastreabilidade e obrigações fiscais.
+- **Isolamento**: RLS por tenant garante que dados de uma empresa não vazem para outra.
+- **Segredos**: senhas com argon2id; OTP/refresh tokens só como hash; nada em texto claro.
+
+**Retenção**:
+- Registros operacionais (empréstimos, reparos, orçamentos): retidos enquanto o tenant
+  estiver ativo + prazo fiscal aplicável (proposto: 5 anos) após o encerramento.
+- Funcionários soft-deletados: dados pessoais mantidos enquanto houver vínculo histórico;
+  **anonimização** (proposta) 5 anos após o soft-delete, se não houver obrigação legal.
+- `otp_challenges`: efêmeros — expurgo recomendado (job) após expiração/consumo.
+- `refresh_tokens` revogados/expirados: expurgo recomendado (job) após o TTL.
+- Logs de auditoria de acesso: retenção proposta de 6–12 meses.
+
+**Direitos do titular**: acesso/correção via Root da empresa; solicitações de eliminação/
+anonimização tratadas respeitando as obrigações legais de retenção. *(Fluxo automatizado
+de expurgo/anonimização = backlog pós-go-live.)*
 
 ---
 

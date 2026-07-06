@@ -11,6 +11,7 @@ import { config } from "../../config/env";
 export interface RateLimitOverrides {
   loginMax?: number;
   otpMax?: number;
+  globalMax?: number;
   windowMs?: number;
 }
 

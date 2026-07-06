@@ -21,6 +21,7 @@ const app = createApp();
 const digits = () => randomUUID().replace(/\D/g, "").padEnd(14, "0").slice(0, 14);
 
 let tenantA: string;
+let tenantB: string;
 let almoxA: string;
 let prestExterno: string;
 let prestInterno: string;
@@ -70,12 +71,12 @@ beforeAll(async () => {
   prestExterno = await insPrestador(tenantA, null);
   prestInterno = await insPrestador(tenantA, respInterno);
   token = signAccessToken({ sub: almoxA, type: "funcionario", tenantId: tenantA, isAlmoxarife: true });
-  tokenB = signAccessToken({ sub: randomUUID(), type: "funcionario", tenantId: await insTenant(), isAlmoxarife: true });
+  tenantB = await insTenant();
+  tokenB = signAccessToken({ sub: randomUUID(), type: "funcionario", tenantId: tenantB, isAlmoxarife: true });
 });
 
 afterAll(async () => {
-  const r = await owner.query(`SELECT id FROM tenants WHERE razao_social LIKE 'T %'`);
-  const ids = r.rows.map((x) => x.id);
+  const ids = [tenantA, tenantB];
   for (const t of ["reparos_externos", "reparos_internos", "orcamentos", "emprestimos", "prestadores", "ferramentas", "funcionarios"]) {
     await owner.query(`DELETE FROM ${t} WHERE tenant_id = ANY($1::uuid[])`, [ids]);
   }

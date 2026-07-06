@@ -1,0 +1,51 @@
+# docker-compose.prod.yml — prep de produção (Sprint 10; finaliza no Sprint 11 na Hostinger).
+# Domínio único: nginx (frontend) serve o SPA e faz proxy de /api → backend. Segredos vêm
+# de variáveis de ambiente / arquivo .env NÃO versionado. Migrations: rodar o serviço
+# "migrate" (perfil) uma vez antes de subir o backend.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-almox}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-almoxarifado}
+      TZ: America/Sao_Paulo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  migrate:
+    build: ./backend
+    command: ["node", "dist/db/migrate.js"]
+    environment:
+      MIGRATION_DATABASE_URL: ${MIGRATION_DATABASE_URL:?}
+    depends_on:
+      - postgres
+    profiles: ["tools"]
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?}
+      MIGRATION_DATABASE_URL: ${MIGRATION_DATABASE_URL:?}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?}
+      OTP_PEPPER: ${OTP_PEPPER:?}
+      TOKEN_PEPPER: ${TOKEN_PEPPER:?}
+      NOTIFICATION_PROVIDER: ${NOTIFICATION_PROVIDER:-log}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-mock}
+      TZ: America/Sao_Paulo
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

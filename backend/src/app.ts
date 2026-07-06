@@ -9,6 +9,7 @@ import express from "express";
 import { authenticate } from "./http/middleware/authenticate";
 import { errorHandler } from "./http/middleware/errors";
 import type { RateLimitOverrides } from "./http/middleware/rateLimit";
+import { auditLogger, makeGlobalLimiter, securityHeaders } from "./http/middleware/security";
 import { assinaturaRouter, pagamentosWebhookRouter } from "./http/routes/assinatura";
 import { authRouter } from "./http/routes/auth";
 import { emprestimosRouter } from "./http/routes/emprestimos";
@@ -23,8 +24,11 @@ import { superAdminAuthRouter } from "./http/routes/superAdminAuth";
 export function createApp(opts: { rateLimit?: RateLimitOverrides } = {}) {
   const app = express();
   app.set("trust proxy", 1);
-  app.use(express.json());
+  app.use(securityHeaders); // cabeçalhos de segurança (helmet)
+  app.use(makeGlobalLimiter(opts.rateLimit?.globalMax)); // rate limit global
+  app.use(express.json({ limit: "100kb" })); // limita payloads (anti-DoS)
   app.use(cookieParser());
+  app.use(auditLogger); // auditoria de requisições mutantes
 
   app.get("/health", (_req, res) => {
     res.json({ status: "ok", service: "almoxarifado-backend" });
