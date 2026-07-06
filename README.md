@@ -59,6 +59,13 @@ docker-compose.yml
   gerencia reparos e orçamentos.
 - **Depositário**: recebe ferramentas em custódia (sem login).
 
+## Deploy
+
+Produção em **domínio único** (frontend serve o SPA + proxy `/api` → backend; Postgres com
+RLS). Artefatos: `backend/Dockerfile`, `frontend/Dockerfile` + `nginx.conf`,
+`docker-compose.prod.yml`, `.env.prod.example`. Passo a passo (EasyPanel ou Docker Compose)
+em **[DEPLOY.md](DEPLOY.md)**; postura de segurança em **[SECURITY.md](SECURITY.md)**.
+
 ## Desenvolvimento por sprints
 
 O projeto é conduzido por um agente CEO que orquestra sub-agentes especialistas, sprint
