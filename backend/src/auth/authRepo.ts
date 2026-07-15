@@ -75,12 +75,16 @@ export async function consumeChallenge(id: string) {
   await db.update(otpChallenges).set({ consumedAt: new Date() }).where(eq(otpChallenges.id, id));
 }
 
-// Status da assinatura do tenant, lido com o tenant fixado (política tenant_self_isolation).
-export async function getTenantStatus(tenantId: string): Promise<string | null> {
+// Acesso do tenant (status de pagamento + ativo), lido com o tenant fixado (self-policy).
+// Login exige ativo AND status_assinatura='regular' (D20).
+export async function getTenantAccess(tenantId: string): Promise<{ status: string; ativo: boolean } | null> {
   const rows = await withTenant(tenantId, (tx) =>
-    tx.select({ status: tenants.statusAssinatura }).from(tenants).where(eq(tenants.id, tenantId)),
+    tx
+      .select({ status: tenants.statusAssinatura, ativo: tenants.ativo })
+      .from(tenants)
+      .where(eq(tenants.id, tenantId)),
   );
-  return rows[0]?.status ?? null;
+  return rows[0] ?? null;
 }
 
 // Papéis do funcionário (para montar as claims após o 2FA), lidos com o tenant fixado.

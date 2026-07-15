@@ -5,7 +5,7 @@
  * Relações: usa AuthContext (login/verifyOtp); redireciona para "/" ao autenticar.
  */
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { Banner, Button, Field, useAsync } from "../components/ui";
 
@@ -88,6 +88,9 @@ export function LoginPage() {
             </Button>
           </form>
         )}
+        <p className="muted" style={{ marginTop: 16 }}>
+          <Link to="/admin/login" title="Acesso do super-admin da plataforma">Acesso super-admin</Link>
+        </p>
       </div>
     </div>
   );

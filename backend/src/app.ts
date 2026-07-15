@@ -10,6 +10,7 @@ import { authenticate } from "./http/middleware/authenticate";
 import { errorHandler } from "./http/middleware/errors";
 import type { RateLimitOverrides } from "./http/middleware/rateLimit";
 import { auditLogger, makeGlobalLimiter, securityHeaders } from "./http/middleware/security";
+import { adminRouter } from "./http/routes/admin";
 import { assinaturaRouter, pagamentosWebhookRouter } from "./http/routes/assinatura";
 import { authRouter } from "./http/routes/auth";
 import { emprestimosRouter } from "./http/routes/emprestimos";
@@ -46,6 +47,8 @@ export function createApp(opts: { rateLimit?: RateLimitOverrides } = {}) {
   app.use("/reparos", authenticate, reparosRouter());
   app.use("/relatorios", authenticate, relatoriosRouter());
   app.use("/assinatura", authenticate, assinaturaRouter());
+  // Painel super-admin (nível plataforma).
+  app.use("/admin", authenticate, adminRouter());
   // Webhook do gateway — público (sem authenticate).
   app.use("/pagamentos", pagamentosWebhookRouter());
 
