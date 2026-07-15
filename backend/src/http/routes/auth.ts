@@ -13,7 +13,7 @@ import {
   createOtpChallenge,
   getFuncionarioRoles,
   getOpenChallenge,
-  getTenantStatus,
+  getTenantAccess,
   incrementChallengeAttempts,
   lookupFuncionarioByPhone,
 } from "../../auth/authRepo";
@@ -96,9 +96,11 @@ export function authRouter(rl: RateLimitOverrides = {}): Router {
       }
       await consumeChallenge(ch.id);
 
-      // Bloqueio por pagamento (CLAUDE.md 5.2).
-      const status = await getTenantStatus(ch.tenantId);
-      if (status !== "regular") throw new AppError(403, "acesso bloqueado, contatar suporte");
+      // Bloqueio por pagamento (5.2) ou suspensão administrativa (D20).
+      const acc = await getTenantAccess(ch.tenantId);
+      if (!acc || !acc.ativo || acc.status !== "regular") {
+        throw new AppError(403, "acesso bloqueado, contatar suporte");
+      }
 
       const roles = await getFuncionarioRoles(ch.tenantId, ch.funcionarioId);
       const claims: AccessClaims = {
@@ -123,8 +125,10 @@ export function authRouter(rl: RateLimitOverrides = {}): Router {
       const rotated = await rotateRefreshToken(raw);
       if (!rotated) throw new AppError(401, "refresh inválido");
       if (rotated.claims.type === "funcionario" && rotated.claims.tenantId) {
-        const status = await getTenantStatus(rotated.claims.tenantId);
-        if (status !== "regular") throw new AppError(403, "acesso bloqueado, contatar suporte");
+        const acc = await getTenantAccess(rotated.claims.tenantId);
+        if (!acc || !acc.ativo || acc.status !== "regular") {
+          throw new AppError(403, "acesso bloqueado, contatar suporte");
+        }
       }
       setRefreshCookie(res, rotated.raw);
       res.json({ accessToken: signAccessToken(rotated.claims), tokenType: "Bearer", expiresIn: config.jwt.accessTtlSeconds });

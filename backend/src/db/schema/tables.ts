@@ -83,6 +83,8 @@ export const tenants = pgTable(
     telefone: text("telefone").notNull(),
     endereco: text("endereco"),
     statusAssinatura: assinaturaStatusEnum("status_assinatura").notNull().default("regular"),
+    // Suspensão administrativa pelo super-admin (D20). Login exige ativo AND pagamento regular.
+    ativo: boolean("ativo").notNull().default(true),
     // FK nullable → Funcionário com is_root=true (D14). Preenchido após criar o Root.
     idRootFuncionario: uuid("id_root_funcionario").references((): AnyPgColumn => funcionarios.id),
     ...timestamps(),

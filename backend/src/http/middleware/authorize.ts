@@ -26,6 +26,11 @@ export function requireRoot(req: Request, _res: Response, next: NextFunction): v
   next();
 }
 
+export function requireSuperAdmin(req: Request, _res: Response, next: NextFunction): void {
+  if (req.auth?.type !== "super_admin") throw new AppError(403, "acesso restrito ao super-admin");
+  next();
+}
+
 // tenantId garantido para funcionários autenticados.
 export function getTenantId(req: Request): string {
   const t = req.auth?.tenantId;

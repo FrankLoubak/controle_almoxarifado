@@ -97,6 +97,7 @@ Estrutura do repositório:
 - `id`
 - `razao_social`, `cnpj` (único), `email`, `telefone`, `endereco`
 - `status_assinatura` (ver 5.4)
+- `ativo` (booleano — suspensão administrativa pelo super-admin, D20)
 - `id_root_funcionario` (FK nullable → Funcionário com `is_root = true`) — D14.
 - Um Tenant tem um usuário Root associado.
 - **Criado exclusivamente pelo super-admin** (não há self-signup).
@@ -292,6 +293,8 @@ Cada um como tela com filtro de período + botão **Exportar CSV**:
 | D17 | `NotificationProvider` com **adapter selecionável por env** (`NOTIFICATION_PROVIDER=log\|evolution`); `log` (mock) agora, `evolution` como stub configurável | Sprint 2 testável sem credenciais; troca sem mexer na lógica de negócio (5.3). |
 | D18 | Login resolve funcionário/super-admin por telefone/e-mail **global** via funções `SECURITY DEFINER` (`auth_lookup_*`), pois o RLS nega leitura sem tenant; app **não** tem `BYPASSRLS` | Necessário para login por telefone global; mantém isolamento (privilégio mínimo). `otp_challenges` e `refresh_tokens` são tabelas de plataforma (sem RLS de tenant). |
 | D19 | `PaymentProvider` com **adapter selecionável por env** (`PAYMENT_PROVIDER=mock\|mercadopago`); `mock` agora, Mercado Pago como stub configurável | Sprint 9 testável sem credenciais; troca sem mexer na lógica de cobrança (5.4). Webhook aplica update via função `SECURITY DEFINER` (sem contexto de tenant). |
+| D20 | `tenants.ativo` (boolean) — suspensão administrativa pelo super-admin, **separada** do status de pagamento. Login exige `ativo AND status_assinatura='regular'` | Distingue bloqueio por inadimplência (Root/cobrança) de desativação da conta (super-admin). |
+| D21 | Operações do **super-admin** (cross-tenant: listar/onboarding/ativar) via funções `SECURITY DEFINER` (`superadmin_*`), EXECUTE só para `almox_app` | Super-admin é nível plataforma; RLS/app não alcançam. Privilégio mínimo, sem BYPASSRLS. Onboarding cria empresa + Root numa transação. |
 
 ### Política de retenção de dados (LGPD) — Sprint 10
 

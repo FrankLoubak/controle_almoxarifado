@@ -23,6 +23,8 @@ interface AuthValue {
   claims: Claims | null;
   login: (telefone: string, senha: string) => Promise<string>; // retorna challengeId
   verifyOtp: (challengeId: string, codigo: string) => Promise<void>;
+  loginSuperAdmin: (email: string, senha: string) => Promise<string>; // retorna preauthToken
+  verifyTotp: (preauthToken: string, codigo: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -59,6 +61,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     async verifyOtp(challengeId, codigo) {
       const { accessToken } = await api.post<{ accessToken: string }>("/auth/verify-otp", { challengeId, codigo });
+      setAccessToken(accessToken);
+      await loadClaims();
+    },
+    async loginSuperAdmin(email, senha) {
+      const { preauthToken } = await api.post<{ preauthToken: string }>("/auth/super-admin/login", { email, senha });
+      return preauthToken;
+    },
+    async verifyTotp(preauthToken, codigo) {
+      const { accessToken } = await api.post<{ accessToken: string }>("/auth/super-admin/verify-totp", { preauthToken, codigo });
       setAccessToken(accessToken);
       await loadClaims();
     },
